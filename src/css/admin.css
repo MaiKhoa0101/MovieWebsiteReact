@@ -1,0 +1,276 @@
+/* ==========================================
+   BỐ CỤC TRANG QUẢN LÝ
+========================================== */
+.admin-container {
+  padding: 30px;
+  color: white;
+  max-width: 1200px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 15px;
+}
+
+.admin-header h2 {
+  margin: 0;
+}
+
+/* ==========================================
+   BẢNG DANH SÁCH (TABLE)
+========================================== */
+.admin-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  background-color: #1e293b;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-table th {
+  background-color: #0f172a;
+  border-bottom: 1px solid #334155;
+  padding: 15px 20px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.admin-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #334155;
+}
+
+.admin-table tr:hover td {
+  background-color: #334155; /* Hiệu ứng hover cho từng dòng */
+}
+
+/* ==========================================
+   MENU NGỮ CẢNH (DROPDOWN)
+========================================== */
+.action-cell {
+  position: relative;
+  width: 50px;
+  text-align: center;
+}
+
+.btn-icon {
+  background: none;
+  color: #94a3b8;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  padding: 0 10px;
+}
+
+.btn-icon:hover {
+  color: white;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 50px;
+  top: 10px;
+  background-color: #0f172a;
+  padding: 8px;
+  border-radius: 8px;
+  z-index: 10;
+  min-width: 120px;
+  border: 1px solid #334155;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-item {
+  display: block;
+  background: none;
+  color: white;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.dropdown-item:hover {
+  background-color: #1e293b;
+}
+
+.text-danger {
+  color: #f87171 !important;
+}
+
+/* ==========================================
+   CỬA SỔ NỔI (MODALS) - CÓ SCROLL
+========================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px); /* Làm mờ nền đằng sau */
+}
+
+.modal-content {
+  background-color: #1e293b;
+  padding: 30px;
+  border-radius: 12px;
+  width: 500px;
+  max-width: 90%;
+  /* 2 dòng quyết định khả năng scroll */
+  max-height: 85vh; 
+  overflow-y: auto; 
+  color: white;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  border: 1px solid #334155;
+}
+
+/* CUSTOM THANH CUỘN CHO ĐẸP (Chỉ hoạt động trên Chrome/Edge/Safari) */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-content::-webkit-scrollbar-track {
+  background: #0f172a; 
+  border-radius: 0 12px 12px 0;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background: #475569; 
+  border-radius: 8px;
+}
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #64748b; 
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 20px;
+  color: #f8fafc;
+}
+
+/* ==========================================
+   FORM INPUTS
+========================================== */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: -6px; /* Kéo label gần lại với input */
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background-color: #0f172a;
+  color: white;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+textarea.form-input {
+  resize: vertical; /* Chỉ cho phép kéo dọc textarea */
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+.divider {
+  height: 1px;
+  background-color: #334155;
+  margin: 15px 0;
+}
+
+.section-title {
+  color: #3b82f6;
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+/* ==========================================
+   NÚT BẤM (BUTTONS)
+========================================== */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end; /* Đẩy nút sang phải */
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #334155;
+}
+
+.btn-primary {
+  padding: 10px 24px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.btn-cancel {
+  padding: 10px 24px;
+  background-color: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #334155;
+  color: white;
+}
+
+.btn-danger {
+  padding: 10px 24px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+}
