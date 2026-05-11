@@ -176,6 +176,11 @@ export function CreateMovieForm({
                             Chiếu Rạp
                         </label>
                         <label className="checkbox-label">
+                            <input type="checkbox" checked={formData.is_series ?? false}
+                                onChange={e => setFormData({ ...formData, is_series: e.target.checked })} />
+                            Phim bộ?
+                        </label>
+                        <label className="checkbox-label">
                             <input type="checkbox" checked={formData.sub_docquyen ?? false}
                                 onChange={e => setFormData({ ...formData, sub_docquyen: e.target.checked })} />
                             Sub Độc Quyền

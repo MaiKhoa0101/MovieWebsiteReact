@@ -15,7 +15,7 @@ export function MovieCard({
   return (
     <div className="movie-card">
       <div className="image-container">
-        <span className="badge-quality">{isSeries?"Bộ":"Lẻ"}</span>
+        <span className={isSeries?"badge-series":"badge-movie"}>{isSeries?"Bộ":"Lẻ"}</span>
         <img src={imgUrl} alt={name} />
       </div>
       <div className="movie-info">

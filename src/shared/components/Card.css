@@ -28,11 +28,23 @@
 }
 
 /* Các nhãn (Badge) đè lên ảnh */
-.badge-quality  {
+.badge-series {
   position: absolute;
   top: 8px;
   left: 8px;
   background-color: #1e3a8a; /* Xanh dương đậm */
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.badge-movie {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: #ff8800;
   color: white;
   font-size: 10px;
   padding: 2px 6px;
