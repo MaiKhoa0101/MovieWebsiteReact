@@ -1,0 +1,6 @@
+Chỉ xử lý:
+
+gọi API
+websocket
+firebase
+external service

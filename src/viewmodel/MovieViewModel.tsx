@@ -1,111 +1,122 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import type { MovieCreateDTO, MoviePatchDTO, MovieResponseDTO } from "../data/movie.types";
+import type { MovieCreateDTO, MovieDetailResponseDTO, MoviePatchDTO, MovieResponseDTO } from "../features/movies/models/movie.dto";
 
 
-export function useMovieViewModel(){
+const BASE_URL = "http://localhost:8000/api/v1/movies";
 
-    const [movielist, setMovieList] = useState<MovieResponseDTO[]>([]);
-    const token = localStorage.getItem('auth_token');
-
-    async function fetchMovies(){
-        if (!token) {
-            return;
-        }
-        try{
-
-            let response = await axios.get('http://localhost:8000/api/v1/movies',{
-                headers: {
-                    'Authorization': `Bearer ${token}` 
-                }
-            });
-
-            setMovieList(response.data.data)
-
-        }
-        catch ( error:any ){
-            console.error("Lỗi lấy danh sách phim:", error);
-        }
-
-    }
-
-    useEffect(()=>{
-        fetchMovies()
-    },[token])
-
-    return {
-        movielist
-    }
-
+function getHeaders() {
+    const token = localStorage.getItem("auth_token");
+    return { Authorization: `Bearer ${token}` };
 }
 
+// ==========================================
+// ViewModel dùng cho trang xem phim (user)
+// ==========================================
+export function useMovieViewModel() {
+    const [movielist, setMovieList] = useState<MovieResponseDTO[]>([]);
+
+    async function fetchMovies() {
+        try {
+            const res = await axios.get(BASE_URL, { headers: getHeaders() });
+            setMovieList(res.data.data ?? []);
+        } catch (error) {
+            console.error("Lỗi lấy danh sách phim:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchMovies();
+    }, []);
+
+    return { movielist };
+}
+
+// ==========================================
+// ViewModel dùng cho trang Admin
+// ==========================================
 export function useMovieAdminViewModel() {
-  // BÁO CHO REACT: Cái mảng này chỉ được chứa các object có cấu trúc MovieResponseDTO
-  const [movielist, setMoviesList] = useState<MovieResponseDTO[]>([]);
-  
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  // Ép kiểu cho biến đang được chọn
-  const [editingMovie, setEditingMovie] = useState<MovieResponseDTO | null>(null);
-  const [deletingMovie, setDeletingMovie] = useState<MovieResponseDTO | null>(null);
+    const [movielist, setMoviesList] = useState<MovieResponseDTO[]>([]);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [editingMovie, setEditingMovie] = useState<MovieDetailResponseDTO | null>(null);
+    const [deletingMovie, setDeletingMovie] = useState<MovieResponseDTO | null>(null);
 
-  const token = localStorage.getItem('auth_token');
-  const headers = { 'Authorization': `Bearer ${token}` };
+    // ---------- FETCH LIST ----------
+    const fetchMovies = async () => {
+        try {
+            const res = await axios.get(BASE_URL, { headers: getHeaders() });
+            setMoviesList(res.data.data ?? []);
+        } catch (error) {
+            console.error("Lỗi lấy danh sách phim:", error);
+        }
+    };
 
-  const fetchMovies = async () => {
-    try {
-      const res = await axios.get('http://localhost:8000/api/v1/movies', { headers });
-      setMoviesList(res.data.data || res.data);
-    } catch (error) {
-      console.error("Lỗi lấy danh sách", error);
-    }
-  };
+    useEffect(() => {
+        fetchMovies();
+    }, []);
 
-  useEffect(() => { fetchMovies(); }, []);
+    // ---------- FETCH DETAIL (có episodes, external_ids) ----------
+    const fetchMovieById = async (id: string): Promise<MovieDetailResponseDTO | null> => {
+        try {
+            const res = await axios.get(`${BASE_URL}/id/${id}`, { headers: getHeaders() });
+            return res.data.data ?? res.data;
+        } catch (error) {
+            console.error("Lỗi lấy chi tiết phim:", error);
+            return null;
+        }
+    };
 
+    // Khi bấm nút Sửa: fetch detail trước để lấy đủ episodes
+    const openEditMovie = async (movie: MovieResponseDTO) => {
+        const detail = await fetchMovieById(movie.id);
+        setEditingMovie(detail);
+    };
 
-  
+    // ---------- CREATE ----------
+    const createMovie = async (newMovieData: MovieCreateDTO) => {
+        try {
+            await axios.post(`${BASE_URL}/create`, newMovieData, { headers: getHeaders() });
+            setIsCreateOpen(false);
+            fetchMovies();
+            alert("Tạo phim thành công!");
+        } catch (error) {
+            console.error("Lỗi tạo phim:", error);
+            alert("Tạo phim thất bại!");
+        }
+    };
 
+    // ---------- PATCH ----------
+    const updateMovie = async (id: string, patchData: MoviePatchDTO) => {
+        try {
+            await axios.patch(`${BASE_URL}/patch-movie/${id}`, patchData, { headers: getHeaders() });
+            setEditingMovie(null);
+            fetchMovies();
+            alert("Cập nhật thành công!");
+        } catch (error) {
+            console.error("Lỗi cập nhật:", error);
+            alert("Cập nhật thất bại!");
+        }
+    };
 
-  // Ép kiểu đầu vào phải chuẩn form tạo mới
-  const createMovie = async (newMovieData: MovieCreateDTO) => {
-    try {
-      await axios.post('http://localhost:8000/api/v1/movies/create', newMovieData, { headers });
-      setIsCreateOpen(false);
-      fetchMovies();
-      alert("Tạo phim thành công!");
-    } catch (error) {
-      console.error("Lỗi tạo phim", error);
-    }
-  };
+    // ---------- DELETE ----------
+    const deleteMovie = async (id: string) => {
+        try {
+            await axios.delete(`${BASE_URL}/delete-by-id/${id}`, { headers: getHeaders() });
+            setDeletingMovie(null);
+            fetchMovies();
+            alert("Đã xóa phim!");
+        } catch (error) {
+            console.error("Lỗi xóa phim:", error);
+            alert("Xóa phim thất bại!");
+        }
+    };
 
-  // Ép kiểu đầu vào cho form sửa
-  const updateMovie = async (id: string, patchData: MoviePatchDTO) => {
-    try {
-      await axios.patch(`http://localhost:8000/api/v1/movies/patch-movie/${id}`, patchData, { headers });
-      setEditingMovie(null);
-      fetchMovies();
-      alert("Cập nhật thành công!");
-    } catch (error) {
-      console.error("Lỗi cập nhật", error);
-    }
-  };
-
-  const deleteMovie = async (id: string) => {
-    try {
-      await axios.delete(`http://localhost:8000/api/v1/movies/delete-by-id/${id}`, { headers });
-      setDeletingMovie(null);
-      fetchMovies();
-      alert("Đã xóa phim!");
-    } catch (error) {
-      console.error("Lỗi xóa phim", error);
-    }
-  };
-
-  return {
-    movielist,
-    isCreateOpen, setIsCreateOpen,
-    editingMovie, setEditingMovie,
-    deletingMovie, setDeletingMovie,
-    createMovie, updateMovie, deleteMovie
-  };
+    return {
+        movielist,
+        isCreateOpen, setIsCreateOpen,
+        editingMovie, setEditingMovie,
+        deletingMovie, setDeletingMovie,
+        openEditMovie,
+        createMovie, updateMovie, deleteMovie,
+    };
 }

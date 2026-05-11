@@ -1,0 +1,6 @@
+Nhiệm vụ:
+
+transform data
+cache
+combine API
+mapping DTO → domain model

@@ -1,10 +1,9 @@
 // src/pages/Home.tsx
 
 import { useNavigate } from 'react-router-dom';
-// Giả sử bạn đã tách MovieCard ra một file riêng
-import '../../App.css'; // Import file CSS Grid lúc nãy
-import { MovieCard } from '../components/Card';
-import { useMovieViewModel } from '../../viewmodel/MovieViewModel';
+import '../../../shared/components/Card.css'; // Import file CSS Grid lúc nãy
+import { MovieCard } from '../../../shared/components/Card';
+import { useMovieViewModel } from '../../../viewmodel/MovieViewModel';
 
 export default function Home() {
   const movievm = useMovieViewModel();
@@ -21,7 +20,7 @@ export default function Home() {
       </div>
 
       <section className="movie-grid">
-        {/* Map dữ liệu từ Backend ra giao diện */}
+        
         {movielist.map((movie: any) => (
           <MovieCard 
                 key={movie.id}
@@ -29,7 +28,8 @@ export default function Home() {
                 // Căn chỉnh các trường cho khớp với DTO của bạn nhé
                 imgUrl={movie.poster_url}
                 description={movie.description} 
-                isSeries={movie.is_series}          />
+                isSeries={movie.is_series}         
+          />
         ))}
       </section>
     </div>

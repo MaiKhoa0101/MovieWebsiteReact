@@ -1,9 +1,9 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './view/pages/login';
-import Register from './view/pages/register';
-import Home from './view/pages/home';
-import { MovieManagement } from './view/pages/movie_management';
+import Login from './features/auth/view/login';
+import Register from './features/auth/view/register';
+import Home from './features/home/view/home';
+import { MovieManagement } from './features/movies/view/pages/movie_management';
 
 
 function App() {
