@@ -18,6 +18,7 @@ export default function DetailMovie() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [activeServer, setActiveServer] = useState<string | null>(null);
     const [currentEpisode, setCurrentEpisode] = useState<EpisodeResponseDTO | null>(null);
+    const [expanded, setExpanded] = useState(false);
     const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
 
     useEffect(() => {
@@ -36,6 +37,18 @@ export default function DetailMovie() {
         const key = ep.server_name ?? "Server mặc định";
         if (!serverGroups[key]) serverGroups[key] = [];
         serverGroups[key].push(ep);
+    });
+
+    // Sắp xếp từng server theo số trong name_episode
+    const extractEpNumber = (name: string): number => {
+        const match = name.match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+    };
+
+    Object.keys(serverGroups).forEach(key => {
+        serverGroups[key].sort((a, b) =>
+            extractEpNumber(a.name_episode) - extractEpNumber(b.name_episode)
+        );
     });
     const serverNames = Object.keys(serverGroups);
     const videoUrl = currentEpisode?.link_embed || currentEpisode?.link_m3u8 || "";
@@ -64,9 +77,12 @@ export default function DetailMovie() {
                     
                     <div className="detail-hero__overlay" />
                     <div className="detail-hero__gradient" />
-                    <div className="detail-hero__button-trailer">
-                        <MdPlayArrow style={{ scale: 10 }} onClick={() => setIsTrailerPlaying(true)}  />
-                    </div>
+                    { movie.trailer_url&&(
+                        <div className="detail-hero__button-trailer">
+                            <MdPlayArrow style={{ scale: 10 }} onClick={() => setIsTrailerPlaying(true)}  />
+                        </div>
+                        )
+                    }
 
                 </div>
             )}
@@ -77,7 +93,7 @@ export default function DetailMovie() {
                     style={{ backgroundImage: `url(${movie.thumb_url || movie.poster_url})` }}
                 >       
                     <iframe 
-                        src="https://www.youtube.com/embed/hIR8Ar-Z4hw" 
+                        src={movie.trailer_url}
                         className="detail-hero__iframe"
                     ></iframe>
                 </div>
@@ -153,7 +169,8 @@ export default function DetailMovie() {
                                     className={`detail-server-btn ${activeServer === name ? "detail-server-btn--active" : ""}`}
                                     onClick={() => {
                                         setActiveServer(name);
-                                        setCurrentEpisode(serverGroups[name][0]);
+                                        const firstEp = serverGroups[name][0];
+                                        setCurrentEpisode(firstEp);
                                     }}
                                 >
                                     {name}
@@ -161,13 +178,13 @@ export default function DetailMovie() {
                             ))}
                         </div>
 
-                        {activeServer && serverGroups[activeServer]?.length > 1 && (
+                        {activeServer && serverGroups[activeServer]?.length >= 1 && (
                             <div className="detail-episode-list">
                                 {serverGroups[activeServer].map(ep => (
                                     <button
                                         key={ep.id}
                                         className={`detail-ep-btn ${currentEpisode?.id === ep.id ? "detail-ep-btn--active" : ""}`}
-                                        onClick={() => { setCurrentEpisode(ep); }}
+                                        onClick={() => { setCurrentEpisode(ep);}}
                                     >
                                         {ep.name_episode}
                                     </button>
@@ -182,7 +199,7 @@ export default function DetailMovie() {
                         <div className="detail-section__accent" />
                         <span className="detail-section__title">Nội Dung Phim</span>
                     </div>
-                    <p className={`detail-description ${expanded ? "detail-description--expanded" : "detail-description--collapsed"}`}>
+                    <p className={`detail-description`}>
                         {movie.description ?? "Chưa có mô tả."}
                     </p>
                 </div>
