@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./movie_management.css";
-import { useMovieAdminViewModel } from "../../../../viewmodel/MovieViewModel";
-import type { EpisodeCreateDTO, MovieCreateDTO, MovieDetailResponseDTO, MoviePatchDTO, MovieResponseDTO } from "../../models/movie.dto";
+import { useMovieAdminViewModel } from "../../../../../viewmodel/MovieViewModel";
 import { CreateMovieForm } from "./create_movie_form";
 import { UpdateMovieInfo } from "./update_movie_from";
 import { DeleteMovie } from "./delete_movie_form";
+
 
 // ==========================================
 // 1. DANH SÁCH PHIM
@@ -91,7 +91,8 @@ export function MovieManagement() {
                     movie={vm.editingMovie}
                     onClose={() => vm.setEditingMovie(null)}
                     onSubmit={vm.updateMovie}
-                />
+                    onUploadVideo={vm.uploadEpisodeVideo}  // ← thêm dòng này
+                />  
             )}
             {vm.deletingMovie && (
                 <DeleteMovie

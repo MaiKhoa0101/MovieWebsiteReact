@@ -1,16 +1,22 @@
 // src/pages/Home.tsx
 
 import { useNavigate } from 'react-router-dom';
-import '../../../shared/components/Card.css'; // Import file CSS Grid lúc nãy
-import { MovieCard } from '../../../shared/components/Card';
-import { useMovieViewModel } from '../../../viewmodel/MovieViewModel';
+import { useMovieViewModel } from '../../../../viewmodel/MovieViewModel';
+import { useEffect } from 'react';
+import { MovieCard } from '../../../../shared/components/Card';
+
 
 export default function Home() {
   const movievm = useMovieViewModel();
   const navigate = useNavigate();
   const movielist = movievm.movielist;  
+
+  useEffect(() => {
+    movievm.fetchMovies();
+  }, []);
+    
   return (
-    <div>
+    <div style = {{padding:10}}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Home</h1>
         <button onClick={() => {
@@ -18,13 +24,15 @@ export default function Home() {
           navigate('/login');
         }}>Đăng xuất</button>
       </div>
+      
 
       <section className="movie-grid">
         
         {movielist.map((movie: any) => (
-          <MovieCard 
+          <MovieCard
                 key={movie.id}
                 name={movie.name}
+                slug={movie.slug_name}
                 // Căn chỉnh các trường cho khớp với DTO của bạn nhé
                 imgUrl={movie.poster_url}
                 description={movie.description} 

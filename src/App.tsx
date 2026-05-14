@@ -2,8 +2,9 @@ import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './features/auth/view/login';
 import Register from './features/auth/view/register';
-import Home from './features/home/view/home';
-import { MovieManagement } from './features/movies/view/pages/movie_management';
+import Home from './features/home/view/home/home';
+import { MovieManagement } from './features/movies/view/pages/admin/movie_management';
+import DetailMovie from './features/movies/view/pages/detail_movie/detail_movie';
 
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />} />
         <Route path="/admin/movie" element={<MovieManagement />} />
-
+        <Route path="/detail/:slug" element={<DetailMovie />} />
         
         {/* Nếu người dùng gõ link bậy bạ, đẩy họ về trang chủ */}
         <Route path="*" element={<Navigate to="/login" />} />

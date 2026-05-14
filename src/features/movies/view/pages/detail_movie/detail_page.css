@@ -1,0 +1,416 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap');
+
+/* ============================================================
+   PAGE
+   ============================================================ */
+.detail-page {
+    min-height: 100vh;
+    background-color: #080f1a;
+    color: #e2e8f0;
+    font-family: 'Barlow', sans-serif;
+    position: relative;
+}
+
+/* ============================================================
+   LOADING
+   ============================================================ */
+.detail-loading {
+    min-height: 100vh;
+    background-color: #080f1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.detail-loading p {
+    color: #94a3b8;
+    margin-top: 16px;
+    font-family: 'Barlow', sans-serif;
+}
+
+.detail-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #1e293b;
+    border-top-color: #f59e0b;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   BACK BUTTON
+   ============================================================ */
+.detail-back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 100;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s;
+}
+
+.detail-back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================================
+   HERO BANNER
+   ============================================================ */
+.detail-hero {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    background-size: cover;
+    background-position: center top;
+    overflow: hidden;
+}
+
+.detail-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(8, 15, 26, 0.45);
+}
+
+.detail-hero__gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70%;
+    background: linear-gradient(to top, #080f1a 0%, transparent 100%);
+}
+
+.detail-hero__title {
+    position: absolute;
+    bottom: 30px;
+    left: 230px;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+.detail-hero__subtitle {
+    position: absolute;
+    bottom: 8px;
+    left: 230px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #8d8d8d;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================
+   CONTENT WRAPPER
+   ============================================================ */
+.detail-content {
+    padding: 0 16px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ============================================================
+   INFO ROW (poster)
+   ============================================================ */
+.detail-info-row {
+    display: flex;
+    gap: 16px;
+    margin-top: -50px;
+    position: relative;
+    z-index: 10;
+    margin-bottom: 20px;
+}
+
+.detail-poster-wrap {
+    flex-shrink: 0;
+}
+
+.detail-poster {
+    width: 90px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #1e293b;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* ============================================================
+   PLAYER
+   ============================================================ */
+.detail-player-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================
+   CTA BUTTONS
+   ============================================================ */
+.detail-cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.detail-btn-watch {
+    width: 100%;
+    padding: 16px;
+    background-color: #f59e0b;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.detail-btn-watch:hover {
+    background-color: #d97706;
+}
+
+.detail-btn-row-secondary {
+    display: flex;
+    gap: 10px;
+}
+
+.detail-btn-save {
+    flex: 1;
+    padding: 13px;
+    background-color: #0f1e30;
+    color: #e2e8f0;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    transition: background 0.2s;
+}
+
+.detail-btn-save:hover {
+    background-color: #1e293b;
+}
+
+/* ============================================================
+   STATS BAR
+   ============================================================ */
+.detail-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: #0d1826;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.detail-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 8px;
+    gap: 2px;
+    border-right: 1px solid #1e293b;
+}
+
+.detail-stat-item:last-child {
+    border-right: none;
+}
+
+.detail-stat-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f1f5f9;
+    text-align: center;
+}
+
+.detail-stat-label {
+    font-size: 11px;
+    color: #475569;
+    text-align: center;
+}
+
+/* ============================================================
+   SECTION (server, description)
+   ============================================================ */
+.detail-section {
+    margin-bottom: 24px;
+}
+
+.detail-section__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.detail-section__accent {
+    width: 4px;
+    height: 18px;
+    background-color: #f59e0b;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.detail-section__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: 0.04em;
+}
+
+.detail-section__sub {
+    font-size: 12px;
+    color: #475569;
+    margin-left: 4px;
+}
+
+/* ============================================================
+   SERVER LIST
+   ============================================================ */
+.detail-server-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.detail-server-btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    background-color: #0d1826;
+    border: 1px solid #1e293b;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Barlow', sans-serif;
+}
+
+.detail-server-btn:hover {
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
+
+.detail-server-btn--active {
+    background-color: #f59e0b;
+    border-color: #f59e0b;
+    color: #000;
+}
+
+/* ============================================================
+   EPISODE LIST
+   ============================================================ */
+.detail-episode-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.detail-ep-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    background-color: #0d1826;
+    border: 1px solid #1e293b;
+    color: #94a3b8;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    transition: all 0.15s;
+}
+
+.detail-ep-btn:hover {
+    border-color: #3b82f6;
+    color: #93c5fd;
+}
+
+.detail-ep-btn--active {
+    background-color: #1e3a5f;
+    border-color: #3b82f6;
+    color: #93c5fd;
+}
+
+/* ============================================================
+   DESCRIPTION
+   ============================================================ */
+.detail-description {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #94a3b8;
+    margin: 0;
+    -webkit-box-orient: vertical;
+}
+
+.detail-description--collapsed {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+
+.detail-description--expanded {
+    display: block;
+}
+
+.detail-expand-btn {
+    background: none;
+    border: none;
+    color: #f59e0b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 0 0;
+    font-family: 'Barlow', sans-serif;
+}
+
+/* ============================================================
+   TAGS
+   ============================================================ */
+.detail-tags-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.detail-tag {
+    padding: 4px 12px;
+    border-radius: 4px;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.detail-tag--country {
+    background-color: #1a2e1a;
+    border-color: #166534;
+    color: #4ade80;
+}

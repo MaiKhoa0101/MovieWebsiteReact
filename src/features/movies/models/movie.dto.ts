@@ -77,16 +77,15 @@ export interface MovieBaseDTO {
   origin_name?: string;
   is_series: boolean;
 
-  status?: string;     // "completed" | "ongoing"
-
+  status?: string;   
   description?: string;
   poster_url?: string;
   thumb_url?: string;
   trailer_url?: string;
 
-  quality?: string;         // FHD | HD | CAM
-  lang?: string;            // Vietsub | Thuyết Minh
-  time?: string;            // "174 phút"
+  quality?: string;       
+  lang?: string;            
+  time?: string;           
   year?: number;
   view?: number;
 
@@ -98,6 +97,7 @@ export interface MovieBaseDTO {
   chieurap?: boolean;
   notify?: string;
   showtimes?: string;
+  
 }
 
 export interface MovieCreateDTO extends MovieBaseDTO {

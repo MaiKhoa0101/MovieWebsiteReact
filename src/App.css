@@ -1,7 +1,5 @@
 /* Reset cơ bản và tạo nền tối giống hình */
 body {
-  margin: 0;
-  padding: 20px;
   background-color: #0b0f19; /* Màu nền xanh đen tối */
   color: white;
   font-family: sans-serif;
