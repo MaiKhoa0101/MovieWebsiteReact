@@ -1,6 +1,4 @@
 
-/* ===============Card=================*/
-
 .movie-card {
   position:relative;
   display: flex;
@@ -27,12 +25,12 @@
   margin: 5px;
   padding-left: 10px;
   padding-right: 10px;
-  font-size: 18px;
+  font-size: 16px;
   text-align: justify;
 
 
   display: -webkit-box;
-  -webkit-line-clamp: 6;         
+  -webkit-line-clamp: 4;         
   -webkit-box-orient: vertical; 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -113,7 +111,6 @@
   font-size: 15px;
   font-weight: 600;
   margin: 0 0 4px 0;
-  /* Xử lý text dài quá tự cắt thành dấu 3 chấm */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

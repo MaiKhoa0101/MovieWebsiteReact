@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "./Card.css";
 
 interface MovieCardProps {
     name: string;

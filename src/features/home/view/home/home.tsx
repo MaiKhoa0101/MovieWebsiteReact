@@ -33,7 +33,6 @@ export default function Home() {
                 key={movie.id}
                 name={movie.name}
                 slug={movie.slug_name}
-                // Căn chỉnh các trường cho khớp với DTO của bạn nhé
                 imgUrl={movie.poster_url}
                 description={movie.description} 
                 isSeries={movie.is_series}         

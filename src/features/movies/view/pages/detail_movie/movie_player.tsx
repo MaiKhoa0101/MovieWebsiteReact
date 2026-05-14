@@ -1,10 +1,11 @@
-export function EpisodePlayer({ videoUrl }: { videoUrl: string }) {
+export function MediaPlayer({ videoUrl }: { videoUrl: string }) {
     if (!videoUrl) return null;
     const isEmbed =
         videoUrl.includes("player.phimapi.com") ||
         videoUrl.includes("/player/") ||
         videoUrl.includes("player?url=");
 
+    console.log("Phat video ",videoUrl)
     if (isEmbed) {
         return (
             <iframe

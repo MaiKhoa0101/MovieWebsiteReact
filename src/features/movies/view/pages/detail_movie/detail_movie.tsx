@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMovieViewModel } from "../../../../../viewmodel/MovieViewModel";
-import type { EpisodeResponseDTO } from "../../../models/movie.dto";
-import { EpisodePlayer } from "./movie_player";
-import "./DetailMovie.css";
+import type { EpisodeResponseDTO, MovieDetailResponseDTO } from "../../../models/movie.dto";
+import { MediaPlayer } from "./movie_player";
+import "./detail_page.css";
+import { MdPlayArrow } from "react-icons/md";
+
+
+
 
 export default function DetailMovie() {
     const { slug } = useParams();
@@ -14,7 +18,7 @@ export default function DetailMovie() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [activeServer, setActiveServer] = useState<string | null>(null);
     const [currentEpisode, setCurrentEpisode] = useState<EpisodeResponseDTO | null>(null);
-    const [expanded, setExpanded] = useState(false);
+    const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
 
     useEffect(() => {
         if (slug) movievm.fetchMoviesBySlug(slug);
@@ -27,7 +31,6 @@ export default function DetailMovie() {
         }
     }, [movie]);
 
-    // Group episodes by server_name
     const serverGroups: Record<string, EpisodeResponseDTO[]> = {};
     movie?.episodes?.forEach(ep => {
         const key = ep.server_name ?? "Server mặc định";
@@ -35,9 +38,8 @@ export default function DetailMovie() {
         serverGroups[key].push(ep);
     });
     const serverNames = Object.keys(serverGroups);
-    const videoUrl = currentEpisode?.link_m3u8 || currentEpisode?.link_embed || "";
+    const videoUrl = currentEpisode?.link_embed || currentEpisode?.link_m3u8 || "";
 
-    // ── Loading ──────────────────────────────────────────────
     if (!movie) {
         return (
             <div className="detail-loading">
@@ -47,30 +49,42 @@ export default function DetailMovie() {
         );
     }
 
-    // ── Page ─────────────────────────────────────────────────
     return (
         <div className="detail-page">
 
-            {/* BACK */}
             <button className="detail-back-btn" onClick={() => navigate(-1)}>‹</button>
 
-            {/* HERO */}
-            <div
-                className="detail-hero"
-                style={{ backgroundImage: `url(${movie.thumb_url || movie.poster_url})` }}
-            >
-                <div className="detail-hero__overlay" />
-                <div className="detail-hero__gradient" />
-                <h1 className="detail-hero__title">{movie.name}</h1>
-                {movie.origin_name && (
-                    <h2 className="detail-hero__subtitle">{movie.origin_name}</h2>
-                )}
-            </div>
 
-            {/* CONTENT */}
+            { !isTrailerPlaying &&( 
+                    
+                <div
+                    className="detail-hero"
+                    style={{ backgroundImage: `url(${movie.thumb_url || movie.poster_url})` }}
+                >   
+                    
+                    <div className="detail-hero__overlay" />
+                    <div className="detail-hero__gradient" />
+                    <div className="detail-hero__button-trailer">
+                        <MdPlayArrow style={{ scale: 10 }} onClick={() => setIsTrailerPlaying(true)}  />
+                    </div>
+
+                </div>
+            )}
+            { isTrailerPlaying && movie.trailer_url &&( 
+                
+                <div
+                    className="detail-hero"
+                    style={{ backgroundImage: `url(${movie.thumb_url || movie.poster_url})` }}
+                >       
+                    <iframe 
+                        src="https://www.youtube.com/embed/hIR8Ar-Z4hw" 
+                        className="detail-hero__iframe"
+                    ></iframe>
+                </div>
+            )}
+
             <div className="detail-content">
 
-                {/* POSTER */}
                 <div className="detail-info-row">
                     <div className="detail-poster-wrap">
                         <img
@@ -83,22 +97,27 @@ export default function DetailMovie() {
                             }}
                         />
                     </div>
+                    <div className="detail-info-column">
+                        <span className={movie.is_series == true?"detail-info-column__badge-series":"detail-info-column__badge-movie"}>{movie.is_series?"Phim bộ":"Phim lẻ"}</span>
+                        <h1 className="detail-info-column__title">{movie.name}</h1>
+                        {movie.origin_name && (
+                            <h2 className="detail-info-column__subtitle">{movie.origin_name}</h2>
+                        )}
+                    </div>
                 </div>
 
-                {/* PLAYER */}
                 {isPlaying && videoUrl && (
                     <div className="detail-player-wrap">
-                        <EpisodePlayer videoUrl={videoUrl} />
+                        <MediaPlayer videoUrl={videoUrl} />
                     </div>
                 )}
 
-                {/* CTA */}
                 <div className="detail-cta-group">
                     <button className="detail-btn-watch" onClick={() => setIsPlaying(true)}>
-                        ▶ Xem Phim
+                        Xem phim
                     </button>
                     <div className="detail-btn-row-secondary">
-                        <button className="detail-btn-save">🔖 Lưu vào bộ sưu tập</button>
+                        <button className="detail-btn-save">Lưu vào bộ sưu tập</button>
                     </div>
                 </div>
 
@@ -117,12 +136,11 @@ export default function DetailMovie() {
                     ))}
                 </div>
 
-                {/* SERVER + EPISODE SELECTOR */}
                 {serverNames.length > 0 && (
                     <div className="detail-section">
                         <div className="detail-section__header">
                             <div className="detail-section__accent" />
-                            <span className="detail-section__title">Chọn tập</span>
+                            <span className="detail-section__title">Chọn server</span>
                             <span className="detail-section__sub">
                                 {serverNames.length}/{serverNames.length} server
                             </span>
@@ -149,7 +167,7 @@ export default function DetailMovie() {
                                     <button
                                         key={ep.id}
                                         className={`detail-ep-btn ${currentEpisode?.id === ep.id ? "detail-ep-btn--active" : ""}`}
-                                        onClick={() => { setCurrentEpisode(ep); setIsPlaying(true); }}
+                                        onClick={() => { setCurrentEpisode(ep); }}
                                     >
                                         {ep.name_episode}
                                     </button>
@@ -159,7 +177,6 @@ export default function DetailMovie() {
                     </div>
                 )}
 
-                {/* DESCRIPTION */}
                 <div className="detail-section">
                     <div className="detail-section__header">
                         <div className="detail-section__accent" />
@@ -168,14 +185,8 @@ export default function DetailMovie() {
                     <p className={`detail-description ${expanded ? "detail-description--expanded" : "detail-description--collapsed"}`}>
                         {movie.description ?? "Chưa có mô tả."}
                     </p>
-                    {(movie.description?.length ?? 0) > 200 && (
-                        <button className="detail-expand-btn" onClick={() => setExpanded(p => !p)}>
-                            {expanded ? "Thu gọn ▲" : "Xem thêm ▼"}
-                        </button>
-                    )}
                 </div>
 
-                {/* TAGS */}
                 {(movie.categories?.length > 0 || movie.countries?.length > 0) && (
                     <div className="detail-tags-section">
                         {movie.categories?.map(c => (
