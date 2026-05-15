@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useMovieViewModel } from '../../../../viewmodel/MovieViewModel';
 import { useEffect } from 'react';
 import { MovieCard } from '../../../../shared/components/Card';
-
+import { SlideNewMovie } from '../../components/sliding';
+ 
 
 export default function Home() {
   const movievm = useMovieViewModel();
@@ -16,14 +17,16 @@ export default function Home() {
   }, []);
     
   return (
-    <div style = {{padding:10}}>
+    <div style = {{padding:10, margin:20}}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Home</h1>
         <button onClick={() => {
           localStorage.removeItem('auth_token');
           navigate('/login');
         }}>Đăng xuất</button>
       </div>
+      <SlideNewMovie movie_list={movielist}>
+        
+      </SlideNewMovie>
       
 
       <section className="movie-grid">

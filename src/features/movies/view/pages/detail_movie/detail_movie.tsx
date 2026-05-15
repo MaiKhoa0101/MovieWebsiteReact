@@ -72,7 +72,7 @@ export default function DetailMovie() {
                     
                 <div
                     className="detail-hero"
-                    style={{ backgroundImage: `url(${movie.thumb_url || movie.poster_url})` }}
+                    style={{ backgroundImage: `url(${movie.thumb_url || movie.poster_url}   )` }}
                 >   
                     
                     <div className="detail-hero__overlay" />
@@ -91,16 +91,19 @@ export default function DetailMovie() {
                 <div
                     className="detail-hero"
                     style={{ backgroundImage: `url(${movie.thumb_url || movie.poster_url})` }}
-                >       
-                    <iframe 
-                        src={movie.trailer_url}
+                >    
+                    <iframe style={{background:`${movie.thumb_url}`}}
+                        src={getAutoplayUrl(movie.trailer_url)} 
                         className="detail-hero__iframe"
+                        allow="autoplay; fullscreen"
+                        title="Trailer"
                     ></iframe>
+                    <div className="detail-hero__gradient" />
+
                 </div>
             )}
 
             <div className="detail-content">
-
                 <div className="detail-info-row">
                     <div className="detail-poster-wrap">
                         <img
@@ -114,11 +117,23 @@ export default function DetailMovie() {
                         />
                     </div>
                     <div className="detail-info-column">
+                        
                         <span className={movie.is_series == true?"detail-info-column__badge-series":"detail-info-column__badge-movie"}>{movie.is_series?"Phim bộ":"Phim lẻ"}</span>
+                        
                         <h1 className="detail-info-column__title">{movie.name}</h1>
+                        
                         {movie.origin_name && (
                             <h2 className="detail-info-column__subtitle">{movie.origin_name}</h2>
                         )}
+                        
+                        <h2 style={{
+                                textTransform:"uppercase", 
+                                color:`${movie.status=="completed"?"lightgreen":"yellow"}`,
+                                fontSize: "12px"
+                            }} 
+                            className="detail-info-column__subtitle">
+                            {movie.status?movie.status:"Chưa cập nhật"}
+                        </h2>
                     </div>
                 </div>
 
@@ -219,3 +234,10 @@ export default function DetailMovie() {
         </div>
     );
 }
+
+const getAutoplayUrl = (url:string) => {
+  if (!url) return "";
+  // Nếu URL đã có dấu hỏi chấm (?) thì nối bằng dấu &, ngược lại nối bằng dấu ?
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}autoplay=1&mute=1`;
+};

@@ -26,6 +26,9 @@ export function useMovieViewModel() {
         try {
             const res = await axios.get(BASE_URL, { headers: getHeaders() });
             setMovieList(res.data.data ?? []);
+            for (let i = 0; i < res.data.data.length; i++) {
+                console.log("Tim dc thumb: ",res.data.data[i].thumb_url)
+            }
         } catch (error) {
             console.error("Lỗi lấy danh sách phim:", error);
         }

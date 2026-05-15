@@ -1,15 +1,12 @@
-/* Reset cơ bản và tạo nền tối giống hình */
 body {
-  background-color: #0b0f19; /* Màu nền xanh đen tối */
+  background-color: #0b0f19;
   color: white;
   font-family: sans-serif;
 }
 
-/* KHU VỰC LƯỚI (GRID) CHÍNH */
 .movie-grid {
   display: grid;
-  /* Dòng lệnh ma thuật: Tự động chia cột. Mỗi cột rộng tối thiểu 200px, tối đa lấp đầy khoảng trống (1fr) */
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px; /* Khoảng cách giữa các phim */
+  gap: 24px; 
   padding: 20px 0;
 }
