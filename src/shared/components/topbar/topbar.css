@@ -1,0 +1,192 @@
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(5, 9, 15, 0.514);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-sizing: border-box;
+}
+
+/* ── Logo ────────────────────────────────────────────────── */
+.topbar__logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.topbar__logo-img {
+    height: 36px;
+    width: 36px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+.topbar__logo-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+}
+
+/* ── Right Group ─────────────────────────────────────────── */
+.topbar__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ── Download Button ─────────────────────────────────────── */
+.topbar__btn-download {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1.5px solid #f59e0b;
+    border-radius: 8px;
+    color: #f59e0b;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.15s;
+    white-space: nowrap;
+}
+
+.topbar__btn-download:hover {
+    background: rgba(245, 158, 11, 0.2);
+    transform: translateY(-1px);
+}
+
+.topbar__btn-download svg {
+    flex-shrink: 0;
+}
+
+/* ── Search Trigger ──────────────────────────────────────── */
+.topbar__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 200px;
+    height: 36px;
+    padding: 0 8px 0 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s;
+    box-sizing: border-box;
+}
+
+.topbar__search:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.topbar__search-icon {
+    color: #64748b;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.topbar__search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    color: #e2e8f0;
+    min-width: 0;
+}
+
+.topbar__search-input::placeholder {
+    color: #64748b;
+}
+
+.topbar__search-clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #94a3b8;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.topbar__search-clear:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #f8fafc;
+}
+
+.topbar__search-kbd {
+    display: flex;
+    align-items: center;
+    padding: 2px 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-size: 10px;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+/* ── Account Icon ────────────────────────────────────────── */
+.topbar__btn-account {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    flex-shrink: 0;
+}
+
+.topbar__btn-account:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .topbar__search {
+        width: 140px;
+    }
+
+    .topbar__search-kbd {
+        display: none;
+    }
+
+    .topbar__logo-name {
+        display: none;
+    }
+}
