@@ -72,6 +72,7 @@ export default function DetailMovie() {
                         <strong>Cảnh báo:</strong> {error}
                     </div>
                 )}
+                <button className = "detail-btn-watch" onClick={() =>navigate("/login")}>Đăng nhập lại</button>
             </div>
         );
     }
@@ -154,11 +155,11 @@ export default function DetailMovie() {
 
                             <h2 style={{
                                 textTransform: "uppercase",
-                                color: `${movie.status == "completed" ? "lightgreen" : "yellow"}`,
+                                color: `${movie.status == "completed" ? "lightgreen" : !movie.status? "red": "yellow"}`,
                                 fontSize: "12px"
                             }}
                                 className="detail-info-column__subtitle">
-                                {movie.status ? movie.status : "Chưa cập nhật"}
+                                {movie.status == "completed" ? "Đầy đủ" : movie.status == "incomplete"? `Đang cập nhật ${movie.episode_current}/${movie.episode_total} tập`: "Chưa cập nhật"}
                             </h2>
                         </div>
                     </div>

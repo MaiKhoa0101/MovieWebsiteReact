@@ -20,7 +20,7 @@ export function UpdateMovieInfo({
         slug_name: movie.slug_name,
         origin_name: movie.origin_name ?? "",
         is_series: movie.is_series,
-        status: movie.status ?? "completed",
+        status: movie.status ?? "",
         description: movie.description ?? "",
         poster_url: movie.poster_url ?? "",
         thumb_url: movie.thumb_url ?? "",
@@ -148,6 +148,12 @@ export function UpdateMovieInfo({
                             <input className="form-input"
                                 value={formData.episode_total ?? ""}
                                 onChange={e => setFormData({ ...formData, episode_total: e.target.value })} />
+                        </div>
+                        <div>
+                            <label className="form-label">Tình trạng</label>
+                            <input className="form-input"
+                                value={formData.status ?? ""}
+                                onChange={e => setFormData({ ...formData, status: e.target.value })} />
                         </div>
                     </div>
 

@@ -44,10 +44,8 @@ export function useAuthViewModel() {
             setError(backendMessage);
           }
         } else if (error.request) {
-          // 2. Request đã gửi đi nhưng máy chủ không trả lời (Rớt mạng, sập Server)
           setError("Không thể kết nối đến máy chủ. Kiểm tra lại đường truyền mạng.");
         } else {
-          // 3. Lỗi do code Frontend thiết lập sai
           setError("Lỗi hệ thống khi gửi yêu cầu.");
         }
       } else {
