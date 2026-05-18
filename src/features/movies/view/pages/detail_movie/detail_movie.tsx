@@ -6,6 +6,7 @@ import { MediaPlayer } from "./movie_player";
 import "./detail_page.css";
 import { MdPlayArrow } from "react-icons/md";
 import { Topbar } from "../../../../../shared/components/topbar/topbar";
+import { useAuthViewModel } from "../../../../../viewmodel/AuthViewModel";
 
 
 
@@ -14,6 +15,7 @@ export default function DetailMovie() {
     const { slug } = useParams();
     const navigate = useNavigate();
     const movievm = useMovieViewModel();
+    const authvm = useAuthViewModel();
     const movie = movievm.movie_detail;
 
     const [isPlaying, setIsPlaying] = useState(false);
@@ -21,9 +23,11 @@ export default function DetailMovie() {
     const [currentEpisode, setCurrentEpisode] = useState<EpisodeResponseDTO | null>(null);
     const [expanded, setExpanded] = useState(false);
     const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
+    const error = movievm.error
 
     useEffect(() => {
-        if (slug) movievm.fetchMoviesBySlug(slug);
+        const token = localStorage.getItem('auth_token')
+        if (slug) movievm.fetchMoviesBySlug(slug, token);
     }, [slug]);
 
     useEffect(() => {
@@ -54,7 +58,25 @@ export default function DetailMovie() {
     const serverNames = Object.keys(serverGroups);
     const videoUrl = currentEpisode?.link_embed || currentEpisode?.link_m3u8 || "";
 
-    if (!movie) {
+    if (error) {
+        return (
+            <div>
+                {error && (
+                    <div style={{
+                        backgroundColor: "#fee2e2",
+                        color: "#991b1b",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        marginBottom: "15px"
+                    }}>
+                        <strong>Cảnh báo:</strong> {error}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    else if (!movie) {
         return (
             <div className="detail-loading">
                 <div className="detail-spinner" />
@@ -65,6 +87,7 @@ export default function DetailMovie() {
 
     return (
         <div>
+
             <Topbar />
             <div className="detail-page">
 
@@ -147,9 +170,20 @@ export default function DetailMovie() {
                     )}
 
                     <div className="detail-cta-group">
-                        <button className="detail-btn-watch" onClick={() => setIsPlaying(true)}>
-                            Xem phim
-                        </button>
+                        {localStorage.getItem('auth_token') ? (
+                            <button className="detail-btn-watch" onClick={() => setIsPlaying(true)}>
+                                Xem phim
+                            </button>
+                        ) : (
+                            <button className="detail-btn-watch detail-btn-watch--guest" onClick={() => navigate('/login')}>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                                    <polyline points="10 17 15 12 10 7" />
+                                    <line x1="15" y1="12" x2="3" y2="12" />
+                                </svg>
+                                Đăng nhập để xem
+                            </button>
+                        )}
                         <div className="detail-btn-row-secondary">
                             <button className="detail-btn-save">Lưu vào bộ sưu tập</button>
                         </div>

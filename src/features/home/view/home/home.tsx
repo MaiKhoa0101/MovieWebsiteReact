@@ -10,7 +10,7 @@ import './home.css';
 export default function Home() {
   const movievm = useMovieViewModel();
   const movielist = movievm.movielist;
-
+  
   useEffect(() => {
     movievm.fetchMovies();
   }, []);

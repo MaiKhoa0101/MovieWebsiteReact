@@ -21,29 +21,64 @@ function getHeaders() {
 export function useMovieViewModel() {
     const [movielist, setMovieList] = useState<MovieResponseDTO[]>([]);
     const [movie_detail, setMovieDetail] = useState<MovieDetailResponseDTO | null>(null);
+    const [error, setError] = useState<string | null>(null);;
 
     const fetchMovies = useCallback(async () => {
         try {
             const res = await axios.get(BASE_URL, { headers: getHeaders() });
             setMovieList(res.data.data ?? []);
             for (let i = 0; i < res.data.data.length; i++) {
-                console.log("Tim dc thumb: ",res.data.data[i].thumb_url)
+                console.log("Tim dc thumb: ", res.data.data[i].thumb_url)
             }
         } catch (error) {
             console.error("Lỗi lấy danh sách phim:", error);
         }
     }, []);
 
-    const fetchMoviesBySlug = useCallback(async (slug: string) => {
+    const fetchMoviesBySlug = useCallback(async (slug: string, token?: string | null) => {
         try {
-            const res = await axios.get(`${BASE_URL}/name/${slug}`, { headers: getHeaders() });
+            if (!token) {
+                return
+            }
+            setError(null);
+            const res = await axios.get(
+                `${BASE_URL}/name/${slug}`,
+                {
+                    headers: {
+                        ...getHeaders(),
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
             setMovieDetail(res.data.data ?? null);
         } catch (error) {
-            console.error("Lỗi lấy chi tiết phim:", error);
+            if (axios.isAxiosError(error)) {
+                if (error.response) {
+                    const backendMessage = error.response.data?.detail || error.response.data?.message || "Lỗi từ máy chủ!";
+                    console.log(error)
+
+                    // Bạn có thể custom thêm dựa vào status code nếu muốn
+                    if (error.response.status === 401) {
+                        setError("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+                    } else if (error.response.status === 404) {
+                        setError("Không tìm thấy bộ phim này.");
+                    } else {
+                        setError(backendMessage);
+                    }
+                } else if (error.request) {
+                    // 2. Request đã gửi đi nhưng máy chủ không trả lời (Rớt mạng, sập Server)
+                    setError("Không thể kết nối đến máy chủ. Kiểm tra lại đường truyền mạng.");
+                } else {
+                    // 3. Lỗi do code Frontend thiết lập sai
+                    setError("Lỗi hệ thống khi gửi yêu cầu.");
+                }
+            } else {
+                setError("Đã xảy ra lỗi không xác định.");
+            }
         }
     }, []);
 
-    return { movielist, movie_detail, fetchMoviesBySlug, fetchMovies };
+    return { movielist, movie_detail, fetchMoviesBySlug, fetchMovies, error };
 }
 
 // ============================================================
