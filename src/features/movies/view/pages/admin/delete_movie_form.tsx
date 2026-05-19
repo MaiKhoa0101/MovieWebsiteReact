@@ -1,4 +1,4 @@
-import type { MovieResponseDTO } from "../../models/movie.dto";
+import type { MovieResponseDTO } from "../../../models/movie.dto";
 
 export function DeleteMovie({
     movie,

@@ -78,8 +78,7 @@ export function SlideContent({
     year,
     quality,
     isSeries,
-    onWatch,
-    onInfo
+    onWatch
 }: SlideContentProps) {
     return (
 
@@ -108,9 +107,6 @@ export function SlideContent({
             <div className="hero-carousel__actions">
                 <button className="hero-carousel__btn-watch" onClick={onWatch}>
                     Xem Phim
-                </button>
-                <button className="hero-carousel__btn-info" onClick={onInfo}>
-                    Thông tin
                 </button>
             </div>
         </div>

@@ -6,8 +6,8 @@ interface EpisodeFormBlockProps {
     episode: EpisodeCreateDTO | EpisodeResponseDTO;
     onChange: (index: number, field: keyof EpisodeCreateDTO, value: string) => void;
     onRemove: (index: number) => void;
-    // Optional: truyền vào nếu episode đã có id (đang edit)
     episodeId?: string;
+    // slug baked-in bởi parent, component này chỉ cần (id, file)
     onUploadVideo?: (episodeId: string, file: File) => Promise<string | null>;
 }
 
@@ -20,56 +20,60 @@ export function EpisodeFormBlock({
     onUploadVideo,
 }: EpisodeFormBlockProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [uploading, setUploading] = useState(false);
-    const [uploadError, setUploadError] = useState<string | null>(null);
+    const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !episodeId || !onUploadVideo) return;
 
-        setUploading(true);
-        setUploadError(null);
+        setUploadStatus("uploading");
 
         try {
-            const resultPath = await onUploadVideo(episodeId, file);
-            if (resultPath) {
-                // Tự động điền link_m3u8 sau khi upload xong
-                onChange(index, "link_m3u8", resultPath);
+            const relativePath = await onUploadVideo(episodeId, file);
+            if (relativePath) {
+                // Lưu relative path vào form — FE ghép BASE_URL khi cần phát
+                onChange(index, "link_m3u8", relativePath);
+                setUploadStatus("done");
+            } else {
+                setUploadStatus("error");
             }
-        } catch (err) {
-            setUploadError("Upload thất bại. Thử lại.");
+        } catch {
+            setUploadStatus("error");
         } finally {
-            setUploading(false);
-            // Reset input để có thể chọn lại cùng file
             if (fileInputRef.current) fileInputRef.current.value = "";
         }
     };
 
+    const isUploading = uploadStatus === "uploading";
+
     return (
         <div style={{
             backgroundColor: "#0f172a", padding: "15px", borderRadius: "8px",
-            border: "1px solid #334155", marginBottom: "10px", position: "relative"
+            border: "1px solid #334155", marginBottom: "10px", position: "relative",
         }}>
             {/* Header */}
             <h5 style={{ margin: "0 0 10px 0", color: "#94a3b8" }}>Tập {index + 1}</h5>
-            <button type="button" onClick={() => onRemove(index)} style={{
-                position: "absolute", top: "10px", right: "10px", background: "none",
-                border: "none", color: "#ef4444", cursor: "pointer", fontWeight: "bold", fontSize: "16px"
-            }}>✕</button>
+            <button
+                type="button" onClick={() => onRemove(index)}
+                style={{
+                    position: "absolute", top: 10, right: 10, background: "none",
+                    border: "none", color: "#ef4444", cursor: "pointer", fontSize: 16,
+                }}
+            >✕</button>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
                 <input className="form-input" placeholder="Tên tập (VD: Tập 1, Full...)" required
                     value={episode.name_episode}
                     onChange={e => onChange(index, "name_episode", e.target.value)} />
 
-                <input className="form-input" placeholder="Server name (VD: #HN Vietsub)"
-                    value={episode.server_name ?? ""}
-                    onChange={e => onChange(index, "server_name", e.target.value)} />
-
                 <input className="form-input" placeholder="Slug (VD: tap-1, full)"
                     value={episode.slug ?? ""}
                     onChange={e => onChange(index, "slug", e.target.value)} />
+
+                <input className="form-input" placeholder="Server name (VD: #HN Vietsub)"
+                    value={episode.server_name ?? ""}
+                    onChange={e => onChange(index, "server_name", e.target.value)} />
 
                 <input className="form-input" placeholder="Filename"
                     value={episode.filename ?? ""}
@@ -79,74 +83,66 @@ export function EpisodeFormBlock({
                     value={episode.link_embed ?? ""}
                     onChange={e => onChange(index, "link_embed", e.target.value)} />
 
-                {/* Link M3U8 + Upload button */}
-                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                {/* Link M3U8 + Upload */}
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     <input
                         className="form-input"
-                        placeholder="Link video (tự điền sau khi upload)"
+                        placeholder="Link HLS (tự điền sau khi upload)"
                         value={episode.link_m3u8 ?? ""}
                         onChange={e => onChange(index, "link_m3u8", e.target.value)}
                         style={{ flex: 1 }}
-                        readOnly={uploading}
+                        readOnly={isUploading}
                     />
 
-                    {/* Chỉ hiện nút upload nếu episode đã có id */}
                     {episodeId && onUploadVideo ? (
                         <>
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="video/mp4,video/mkv,video/avi,video/mov,video/webm"
+                                accept=".mp4,.mkv,.avi"
                                 style={{ display: "none" }}
                                 onChange={handleFileChange}
                             />
                             <button
                                 type="button"
-                                disabled={uploading}
+                                disabled={isUploading}
                                 onClick={() => fileInputRef.current?.click()}
                                 style={{
                                     padding: "8px 14px",
-                                    backgroundColor: uploading ? "#475569" : "#2563eb",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "6px",
-                                    cursor: uploading ? "not-allowed" : "pointer",
-                                    fontSize: "12px",
-                                    whiteSpace: "nowrap",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "6px",
+                                    backgroundColor: isUploading ? "#475569" : "#2563eb",
+                                    color: "white", border: "none", borderRadius: 6,
+                                    cursor: isUploading ? "not-allowed" : "pointer",
+                                    fontSize: 12, whiteSpace: "nowrap",
+                                    display: "flex", alignItems: "center", gap: 6,
                                 }}
                             >
-                                {uploading ? (
-                                    <>
-                                        <span style={{
-                                            width: "12px", height: "12px", border: "2px solid #fff",
-                                            borderTopColor: "transparent", borderRadius: "50%",
-                                            display: "inline-block", animation: "spin 0.8s linear infinite"
-                                        }} />
-                                        Đang tải...
-                                    </>
-                                ) : "⬆ Upload"}
+                                {isUploading
+                                    ? <><Spinner /> Đang tải...</>
+                                    : "⬆ Upload HLS"
+                                }
                             </button>
                         </>
                     ) : (
-                        // Episode chưa có id (mới tạo) → chưa upload được
-                        <span style={{ fontSize: "11px", color: "#64748b", whiteSpace: "nowrap" }}>
+                        <span style={{ fontSize: 11, color: "#64748b", whiteSpace: "nowrap" }}>
                             Lưu phim trước
                         </span>
                     )}
                 </div>
 
-                {/* Upload error */}
-                {uploadError && (
-                    <p style={{ color: "#ef4444", fontSize: "12px", margin: 0 }}>{uploadError}</p>
+                {/* Status messages */}
+                {uploadStatus === "uploading" && (
+                    <p style={{ color: "#f59e0b", fontSize: 12, margin: 0 }}>
+                        ⏳ Đang upload... ffmpeg sẽ xử lý HLS ở nền sau khi xong
+                    </p>
                 )}
-
-                {/* Upload progress hint */}
-                {uploading && (
-                    <p style={{ color: "#60a5fa", fontSize: "12px", margin: 0 }}>
-                        ⏳ Đang upload video, vui lòng chờ...
+                {uploadStatus === "done" && (
+                    <p style={{ color: "#10b981", fontSize: 12, margin: 0 }}>
+                        ✅ Upload xong · HLS đang xử lý nền · link đã được điền
+                    </p>
+                )}
+                {uploadStatus === "error" && (
+                    <p style={{ color: "#ef4444", fontSize: 12, margin: 0 }}>
+                        ❌ Upload thất bại. Thử lại.
                     </p>
                 )}
 
@@ -155,9 +151,17 @@ export function EpisodeFormBlock({
                     onChange={e => onChange(index, "description", e.target.value)} />
             </div>
 
-            <style>{`
-                @keyframes spin { to { transform: rotate(360deg); } }
-            `}</style>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
+    );
+}
+
+function Spinner() {
+    return (
+        <span style={{
+            width: 12, height: 12, border: "2px solid #fff",
+            borderTopColor: "transparent", borderRadius: "50%",
+            display: "inline-block", animation: "spin 0.8s linear infinite",
+        }} />
     );
 }

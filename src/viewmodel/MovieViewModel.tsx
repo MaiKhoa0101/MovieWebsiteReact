@@ -158,9 +158,10 @@ export function useMovieAdminViewModel() {
             alert("Xóa phim thất bại!");
         }
     };
-
+    // uploadEpisodeVideo nhận thêm episodeSlug
     const uploadEpisodeVideo = async (
         episodeId: string,
+        episodeSlug: string,        // ← thêm
         file: File
     ): Promise<string | null> => {
         if (!editingMovie) {
@@ -175,25 +176,17 @@ export function useMovieAdminViewModel() {
             formData.append("file", file);
 
             const res = await axios.post(
-                `${BASE_URL}/upload-video/${movieSlug}/${episodeId}`,
+                `${BASE_URL}/upload-video-hls/${movieSlug}/${episodeSlug}/${episodeId}`,
                 formData,
-                {
-                    headers: {
-                        ...getHeaders(),
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
+                { headers: { ...getHeaders(), "Content-Type": "multipart/form-data" } }
             );
 
-            // BE trả về local path VD: "media/movie/the-avengers/ep-id/video.mp4"
-            // Normalize backslash (Windows) và ghép thành full URL
             const localPath: string = res.data.data;
-            const fullUrl = `${BASE_MEDIA_URL}/${localPath.replace(/\\/g, "/")}`;
-
-            return fullUrl;
+            return `${BASE_MEDIA_URL}/${localPath.replace(/\\/g, "/")}`;
 
         } catch (error) {
             console.error("Lỗi upload video:", error);
+            alert("Upload thất bại!");
             return null;
         }
     };

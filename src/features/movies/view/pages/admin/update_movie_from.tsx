@@ -3,6 +3,8 @@ import type { EpisodeCreateDTO, EpisodeResponseDTO, MovieDetailResponseDTO, Movi
 import { EpisodeFormBlock } from "../../components/episode_form";
 import { defaultEpisode } from "./create_movie_form";
 
+type Tab = "info" | "episodes";
+
 export function UpdateMovieInfo({
     movie,
     onClose,
@@ -12,9 +14,9 @@ export function UpdateMovieInfo({
     movie: MovieDetailResponseDTO;
     onClose: () => void;
     onSubmit: (id: string, data: MoviePatchDTO) => void;
-    // Nhận hàm upload từ ViewModel
-    onUploadVideo: (episodeId: string, file: File) => Promise<string | null>;
+    onUploadVideo: (episodeId: string, episodeSlug: string, file: File) => Promise<string | null>;
 }) {
+    const [activeTab, setActiveTab] = useState<Tab>("info");
     const [formData, setFormData] = useState<MoviePatchDTO>({
         name: movie.name,
         slug_name: movie.slug_name,
@@ -36,6 +38,7 @@ export function UpdateMovieInfo({
         chieurap: movie.chieurap ?? false,
         episodes: movie.episodes ?? [],
     });
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,161 +65,201 @@ export function UpdateMovieInfo({
         });
     };
 
+    const episodes = (formData.episodes ?? []) as EpisodeResponseDTO[];
+
     return (
         <div className="modal-overlay">
-            <div className="modal-content">
-                <h3 className="modal-title">Sửa Thông Tin Phim</h3>
+            <div className="modal-content" style={{ maxWidth: 720, width: "100%" }}>
+                <h3 className="modal-title">Sửa Phim: {movie.name}</h3>
+
+                {/* ── TABS ── */}
+                <div style={{ display: "flex", gap: 8, margin: "12px 0", borderBottom: "1px solid #334155" }}>
+                    {(["info", "episodes"] as Tab[]).map(tab => (
+                        <button
+                            key={tab}
+                            type="button"
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                padding: "6px 18px",
+                                border: "none",
+                                borderBottom: activeTab === tab ? "2px solid #6366f1" : "2px solid transparent",
+                                background: "none",
+                                color: activeTab === tab ? "#6366f1" : "#94a3b8",
+                                fontWeight: activeTab === tab ? 600 : 400,
+                                cursor: "pointer",
+                                fontSize: 14,
+                            }}
+                        >
+                            {tab === "info" ? "Thông tin phim" : `Tập phim (${episodes.length})`}
+                        </button>
+                    ))}
+                </div>
+
                 <form onSubmit={handleSubmit} className="modal-form">
 
-                    <label className="form-label">Tên phim *</label>
-                    <input className="form-input" required
-                        value={formData.name ?? ""}
-                        onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                    {activeTab === "info" && (
+                        <>
+                            <label className="form-label">Tên phim *</label>
+                            <input className="form-input" required
+                                value={formData.name ?? ""}
+                                onChange={e => setFormData({ ...formData, name: e.target.value })} />
 
-                    <label className="form-label">Tên gốc</label>
-                    <input className="form-input" placeholder="Tên tiếng nước ngoài"
-                        value={formData.origin_name ?? ""}
-                        onChange={e => setFormData({ ...formData, origin_name: e.target.value })} />
-
-                    <label className="form-label">Slug *</label>
-                    <input className="form-input" required
-                        value={formData.slug_name ?? ""}
-                        onChange={e => setFormData({ ...formData, slug_name: e.target.value })} />
-
-                    <label className="form-label">Mô tả</label>
-                    <textarea className="form-input" rows={3}
-                        value={formData.description ?? ""}
-                        onChange={e => setFormData({ ...formData, description: e.target.value })} />
-
-                    <label className="form-label">Poster URL</label>
-                    <input className="form-input"
-                        value={formData.poster_url ?? ""}
-                        onChange={e => setFormData({ ...formData, poster_url: e.target.value })} />
-
-                    <label className="form-label">Thumbnail URL</label>
-                    <input className="form-input"
-                        value={formData.thumb_url ?? ""}
-                        onChange={e => setFormData({ ...formData, thumb_url: e.target.value })} />
-
-                    <label className="form-label">Trailer URL</label>
-                    <input className="form-input"
-                        value={formData.trailer_url ?? ""}
-                        onChange={e => setFormData({ ...formData, trailer_url: e.target.value })} />
-
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                        <div>
-                            <label className="form-label">Chất lượng</label>
-                            <select className="form-input"
-                                value={formData.quality ?? ""}
-                                onChange={e => setFormData({ ...formData, quality: e.target.value })}>
-                                <option value="FHD">FHD</option>
-                                <option value="HD">HD</option>
-                                <option value="SD">SD</option>
-                                <option value="CAM">CAM</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="form-label">Ngôn ngữ</label>
-                            <select className="form-input"
-                                value={formData.lang ?? ""}
-                                onChange={e => setFormData({ ...formData, lang: e.target.value })}>
-                                <option value="Vietsub">Vietsub</option>
-                                <option value="Thuyết Minh">Thuyết Minh</option>
-                                <option value="Lồng Tiếng">Lồng Tiếng</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="form-label">Năm</label>
-                            <input className="form-input" type="number"
-                                value={formData.year ?? ""}
-                                onChange={e => setFormData({ ...formData, year: Number(e.target.value) })} />
-                        </div>
-                        <div>
-                            <label className="form-label">Thời lượng</label>
+                            <label className="form-label">Tên gốc</label>
                             <input className="form-input"
-                                value={formData.time ?? ""}
-                                onChange={e => setFormData({ ...formData, time: e.target.value })} />
-                        </div>
-                        <div>
-                            <label className="form-label">Tập hiện tại</label>
-                            <input className="form-input"
-                                value={formData.episode_current ?? ""}
-                                onChange={e => setFormData({ ...formData, episode_current: e.target.value })} />
-                        </div>
-                        <div>
-                            <label className="form-label">Tổng số tập</label>
-                            <input className="form-input"
-                                value={formData.episode_total ?? ""}
-                                onChange={e => setFormData({ ...formData, episode_total: e.target.value })} />
-                        </div>
-                        <div>
-                            <label className="form-label">Tình trạng</label>
-                            <input className="form-input"
-                                value={formData.status ?? ""}
-                                onChange={e => setFormData({ ...formData, status: e.target.value })} />
-                        </div>
-                    </div>
+                                value={formData.origin_name ?? ""}
+                                onChange={e => setFormData({ ...formData, origin_name: e.target.value })} />
 
-                    <div style={{ display: "flex", gap: "20px", marginTop: "10px", flexWrap: "wrap" }}>
-                        <label className="checkbox-label">
-                            <input type="checkbox" checked={formData.chieurap ?? false}
-                                onChange={e => setFormData({ ...formData, chieurap: e.target.checked })} />
-                            Chiếu Rạp
-                        </label>
-                        <label className="checkbox-label">
-                            <input type="checkbox" checked={formData.is_series ?? false}
-                                onChange={e => setFormData({ ...formData, is_series: e.target.checked })} />
-                            Phim bộ?
-                        </label>
-                        <label className="checkbox-label">
-                            <input type="checkbox" checked={formData.sub_docquyen ?? false}
-                                onChange={e => setFormData({ ...formData, sub_docquyen: e.target.checked })} />
-                            Sub Độc Quyền
-                        </label>
-                    </div>
+                            <label className="form-label">Slug *</label>
+                            <input className="form-input" required
+                                value={formData.slug_name ?? ""}
+                                onChange={e => setFormData({ ...formData, slug_name: e.target.value })} />
 
-                    {/* DANH SÁCH TẬP */}
-                    <div className="divider" />
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <h4 className="section-title" style={{ margin: 0 }}>
-                            Danh sách tập phim ({formData.episodes?.length ?? 0})
-                        </h4>
-                        <button type="button" onClick={handleAddEpisode}
-                            style={{
-                                padding: "4px 10px", backgroundColor: "#10b981", color: "white",
-                                border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px"
-                            }}>
-                            + Thêm Tập
-                        </button>
-                    </div>
+                            <label className="form-label">Mô tả</label>
+                            <textarea className="form-input" rows={3}
+                                value={formData.description ?? ""}
+                                onChange={e => setFormData({ ...formData, description: e.target.value })} />
 
-                    {(formData.episodes ?? []).length === 0 && (
-                        <p style={{ fontSize: "13px", color: "#64748b", fontStyle: "italic", textAlign: "center" }}>
-                            Chưa có tập phim nào.
-                        </p>
+                            <label className="form-label">Poster URL</label>
+                            <input className="form-input"
+                                value={formData.poster_url ?? ""}
+                                onChange={e => setFormData({ ...formData, poster_url: e.target.value })} />
+
+                            <label className="form-label">Thumbnail URL</label>
+                            <input className="form-input"
+                                value={formData.thumb_url ?? ""}
+                                onChange={e => setFormData({ ...formData, thumb_url: e.target.value })} />
+
+                            <label className="form-label">Trailer URL</label>
+                            <input className="form-input"
+                                value={formData.trailer_url ?? ""}
+                                onChange={e => setFormData({ ...formData, trailer_url: e.target.value })} />
+
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                                <div>
+                                    <label className="form-label">Chất lượng</label>
+                                    <select className="form-input"
+                                        value={formData.quality ?? ""}
+                                        onChange={e => setFormData({ ...formData, quality: e.target.value })}>
+                                        <option value="FHD">FHD</option>
+                                        <option value="HD">HD</option>
+                                        <option value="SD">SD</option>
+                                        <option value="CAM">CAM</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="form-label">Ngôn ngữ</label>
+                                    <select className="form-input"
+                                        value={formData.lang ?? ""}
+                                        onChange={e => setFormData({ ...formData, lang: e.target.value })}>
+                                        <option value="Vietsub">Vietsub</option>
+                                        <option value="Thuyết Minh">Thuyết Minh</option>
+                                        <option value="Lồng Tiếng">Lồng Tiếng</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="form-label">Năm</label>
+                                    <input className="form-input" type="number"
+                                        value={formData.year ?? ""}
+                                        onChange={e => setFormData({ ...formData, year: Number(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <label className="form-label">Thời lượng</label>
+                                    <input className="form-input"
+                                        value={formData.time ?? ""}
+                                        onChange={e => setFormData({ ...formData, time: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="form-label">Tập hiện tại</label>
+                                    <input className="form-input"
+                                        value={formData.episode_current ?? ""}
+                                        onChange={e => setFormData({ ...formData, episode_current: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="form-label">Tổng số tập</label>
+                                    <input className="form-input"
+                                        value={formData.episode_total ?? ""}
+                                        onChange={e => setFormData({ ...formData, episode_total: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="form-label">Tình trạng</label>
+                                    <input className="form-input"
+                                        value={formData.status ?? ""}
+                                        onChange={e => setFormData({ ...formData, status: e.target.value })} />
+                                </div>
+                            </div>
+
+                            <div style={{ display: "flex", gap: 20, marginTop: 10, flexWrap: "wrap" }}>
+                                {[
+                                    { key: "chieurap", label: "Chiếu Rạp" },
+                                    { key: "is_series", label: "Phim bộ?" },
+                                    { key: "sub_docquyen", label: "Sub Độc Quyền" },
+                                ].map(({ key, label }) => (
+                                    <label key={key} className="checkbox-label">
+                                        <input type="checkbox"
+                                            checked={(formData as any)[key] ?? false}
+                                            onChange={e => setFormData({ ...formData, [key]: e.target.checked })} />
+                                        {label}
+                                    </label>
+                                ))}
+                            </div>
+
+                            <div className="modal-actions">
+                                <button type="submit" className="btn-primary">Cập nhật thông tin</button>
+                                <button type="button" onClick={onClose} className="btn-cancel">Đóng</button>
+                            </div>
+                        </>
                     )}
 
-                    {(formData.episodes ?? []).map((ep, index) => {
-                        // Lấy id của episode nếu đang edit (EpisodeResponseDTO có id)
-                        const epId = (ep as EpisodeResponseDTO).id ?? undefined;
-                        return (
-                            <EpisodeFormBlock
-                                key={epId ?? index}
-                                index={index}
-                                episode={ep}
-                                onChange={handleEpisodeChange}
-                                onRemove={handleRemoveEpisode}
-                                // Truyền episodeId và handler upload xuống
-                                episodeId={epId}
-                                onUploadVideo={onUploadVideo}
-                            />
-                        );
-                    })}
+                    {activeTab === "episodes" && (
+                        <>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                                <span style={{ fontSize: 13, color: "#94a3b8" }}>
+                                    {episodes.length} tập · Tập mới chưa lưu sẽ mất nếu đóng mà chưa Cập nhật
+                                </span>
+                                <button type="button" onClick={handleAddEpisode}
+                                    style={{
+                                        padding: "4px 12px", background: "#10b981", color: "#fff",
+                                        border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13,
+                                    }}>
+                                    + Thêm Tập
+                                </button>
+                            </div>
 
-                    <div className="modal-actions">
-                        <button type="submit" className="btn-primary">Cập nhật</button>
-                        <button type="button" onClick={onClose} className="btn-cancel">Hủy</button>
-                    </div>
+                            {episodes.length === 0 && (
+                                <p style={{ textAlign: "center", color: "#64748b", fontStyle: "italic", fontSize: 13 }}>
+                                    Chưa có tập phim nào.
+                                </p>
+                            )}
+
+                            {episodes.map((ep, index) => {
+                                const epId = ep.id ?? undefined;
+                                return (
+                                    <div key={epId ?? index} style={{
+                                        border: "1px solid #334155", borderRadius: 8,
+                                        padding: 12, marginBottom: 10, background: "#0f172a",
+                                    }}>
+                                        <EpisodeFormBlock
+                                            index={index}
+                                            episode={ep}
+                                            onChange={handleEpisodeChange}
+                                            onRemove={handleRemoveEpisode}
+                                            episodeId={epId}
+                                            onUploadVideo={epId && ep.slug
+                                                ? (id, file) => onUploadVideo(id, ep.slug!, file)
+                                                : undefined
+                                            }
+                                        />
+                                        {/* Xóa block upload status ở đây — EpisodeFormBlock tự xử lý */}
+                                    </div>
+                                );
+                            })}
+
+                            <div className="modal-actions">
+                                <button type="submit" className="btn-primary">Lưu danh sách tập</button>
+                                <button type="button" onClick={onClose} className="btn-cancel">Đóng</button>
+                            </div>
+                        </>
+                    )}
                 </form>
             </div>
         </div>

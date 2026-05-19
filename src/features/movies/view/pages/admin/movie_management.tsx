@@ -91,7 +91,7 @@ export function MovieManagement() {
                     movie={vm.editingMovie}
                     onClose={() => vm.setEditingMovie(null)}
                     onSubmit={vm.updateMovie}
-                    onUploadVideo={vm.uploadEpisodeVideo}  // ← thêm dòng này
+                    onUploadVideo={vm.uploadEpisodeVideo}  
                 />  
             )}
             {vm.deletingMovie && (
