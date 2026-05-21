@@ -6,6 +6,7 @@ import { MediaPlayer } from "./movie_player";
 import "./detail_page.css";
 import { MdPlayArrow } from "react-icons/md";
 import { Topbar } from "../../../../../shared/components/topbar/topbar";
+import { useAuthViewModel } from "../../../../../viewmodel/AuthViewModel";
 
 
 
@@ -15,7 +16,8 @@ export default function DetailMovie() {
     const navigate = useNavigate();
     const movievm = useMovieViewModel();
     const movie = movievm.movie_detail;
-
+    const authvm = useAuthViewModel();
+    const user = authvm.user;
     const [isPlaying, setIsPlaying] = useState(false);
     const [activeServer, setActiveServer] = useState<string | null>(null);
     const [currentEpisode, setCurrentEpisode] = useState<EpisodeResponseDTO | null>(null);
@@ -25,6 +27,7 @@ export default function DetailMovie() {
     useEffect(() => {
         const token = localStorage.getItem('auth_token')
         if (slug) movievm.fetchMoviesBySlug(slug, token);
+        if (token) authvm.getInfFromToken(token)
     }, [slug]);
 
     useEffect(() => {
@@ -52,7 +55,10 @@ export default function DetailMovie() {
         );
     });
     const serverNames = Object.keys(serverGroups);
-    const videoUrl = currentEpisode?.link_m3u8 || currentEpisode?.link_embed || "";
+    let videoUrl = null
+    if (user?.premium_until){
+        videoUrl = currentEpisode?.link_m3u8 || currentEpisode?.link_embed || "";
+    } 
 
     if (error) {
         return (
@@ -165,18 +171,25 @@ export default function DetailMovie() {
                             <MediaPlayer videoUrl={videoUrl} />
                         </div>
                     )}
+
                     {!isPlaying && (
 
                         <div className="detail-cta-group">
-                            {localStorage.getItem('auth_token') ? (
+                            {localStorage.getItem('auth_token') && videoUrl? (
                                 <button className="detail-btn-watch" onClick={() => setIsPlaying(true)}>
                                     Xem phim
                                 </button>
-                            ) : (
+                            ) : videoUrl? (
                                 <button className="detail-btn-watch detail-btn-watch--guest" onClick={() => navigate('/login')}>
                                     Đăng nhập để xem
                                 </button>
-                            )}
+                            ):(
+                                <button className="detail-btn-watch detail-btn-watch--guest" onClick={() => navigate('/subscription')}>
+                                    Đăng kí gói xem phim
+                                </button>
+                            )
+                            }
+                            
                             <div className="detail-btn-row-secondary">
                                 <button className="detail-btn-save">Lưu vào bộ sưu tập</button>
                             </div>

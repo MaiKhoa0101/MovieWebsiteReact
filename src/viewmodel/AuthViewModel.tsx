@@ -25,9 +25,7 @@ export function useAuthViewModel() {
 
       const token = response.data.data.token;
       console.log(`token lay duoc la ${token}`)
-      localStorage.setItem('auth_token', token);
-      const decodedPayload = jwtDecode<UserResponseDTO>(token);
-      setUser(decodedPayload)
+      getInfFromToken(token)
 
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -54,10 +52,17 @@ export function useAuthViewModel() {
     }
   };
 
+  const getInfFromToken = (token:string) => {
+      localStorage.setItem('auth_token', token);
+      const decodedPayload = jwtDecode<UserResponseDTO>(token);
+      setUser(decodedPayload)
+  }
+
   return {
     user,
     setUser,
     handleLogin,
+    getInfFromToken,
     error
   }
 }

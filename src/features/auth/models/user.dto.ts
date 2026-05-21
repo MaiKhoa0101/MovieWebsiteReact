@@ -9,6 +9,7 @@ export interface UserBaseDTO{
     is_active: boolean;
     is_verified:boolean;
     is_deleted:boolean;
+    premium_until: string;
 }
 
 export interface UserCreateDTO extends UserBaseDTO{

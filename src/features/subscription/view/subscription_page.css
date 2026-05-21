@@ -1,0 +1,219 @@
+/* ──────────────────────────────────────────
+   subscription_page.css
+   Theo style của detail_page.css
+────────────────────────────────────────── */
+
+.sub-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    color: #e2e8f0;
+    position: relative;
+}
+
+/* ── Header ── */
+.sub-header {
+    margin: 16px 0 28px;
+}
+
+.sub-header__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+}
+
+.sub-header__sub {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* ── Empty ── */
+.sub-empty {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    padding: 48px 0;
+    font-style: italic;
+}
+
+/* ── Error ── */
+.sub-error-box {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+/* ── List ── */
+.sub-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ── Card ── */
+.sub-card {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 20px 20px 20px 22px;
+    transition: border-color 0.18s;
+}
+
+.sub-card:hover {
+    border-color: #6366f1;
+}
+
+/* ── Card body (left) ── */
+.sub-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sub-card__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sub-card__name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+.sub-card__duration {
+    font-size: 11px;
+    font-weight: 500;
+    background: #312e81;
+    color: #a5b4fc;
+    padding: 2px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.sub-card__desc {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.65;
+    max-width: 520px;
+}
+
+/* ── Stats bar (giống detail-stats-bar) ── */
+.sub-card__stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 4px;
+}
+
+.sub-card__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sub-card__stat-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.sub-card__stat-label {
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ── Card action (right) ── */
+.sub-card__action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 6px;
+    min-width: 160px;
+    flex-shrink: 0;
+    border-left: 1px solid #334155;
+    padding-left: 20px;
+}
+
+.sub-card__price {
+    font-size: 22px;
+    font-weight: 700;
+    color: #6366f1;
+    white-space: nowrap;
+}
+
+.sub-card__price-sub {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+/* ── CTA Button (giống detail-btn-watch) ── */
+.sub-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+.sub-btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.sub-btn-primary:active {
+    transform: scale(0.98);
+}
+
+.sub-btn-primary--guest {
+    background: #334155;
+    color: #94a3b8;
+}
+
+.sub-btn-primary--guest:hover {
+    background: #475569;
+    opacity: 1;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .sub-card {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .sub-card__action {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        border-left: none;
+        border-top: 1px solid #334155;
+        padding-left: 0;
+        padding-top: 14px;
+        min-width: unset;
+    }
+
+    .sub-card__price {
+        font-size: 18px;
+    }
+}

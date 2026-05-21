@@ -5,6 +5,7 @@ import Register from './features/auth/view/register';
 import Home from './features/home/view/home/home';
 import { MovieManagement } from './features/movies/view/pages/admin/movie_management';
 import DetailMovie from './features/movies/view/pages/detail_movie/detail_movie';
+import SubscriptionPage from './features/subscription/view/subscription_page';
 
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/admin/movie" element={<MovieManagement />} />
         <Route path="/detail/:slug" element={<DetailMovie />} />
-        
+        <Route path="/subscription" element={<SubscriptionPage />} />
+
         {/* Nếu người dùng gõ link bậy bạ, đẩy họ về trang chủ */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
