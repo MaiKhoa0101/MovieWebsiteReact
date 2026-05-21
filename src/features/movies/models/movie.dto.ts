@@ -69,6 +69,42 @@ export interface EpisodeResponseDTO extends EpisodeBaseDTO {
 }
 
 // ==========================================
+// 3b. VIRTUAL STATE TYPES
+// ==========================================
+
+/**
+ * EpisodeWithVid — bản nháp cục bộ của episode trong phiên chỉnh sửa.
+ * _vid là "điểm neo" ổn định:
+ *   - Episode từ DB  → _vid = ep.slug (nếu có) | crypto.randomUUID()
+ *   - Episode mới    → _vid = crypto.randomUUID()
+ * _vid KHÔNG được gửi lên server, phải strip trước khi submit.
+ */
+export type EpisodeWithVid = (EpisodeCreateDTO | EpisodeResponseDTO) & {
+  _vid: string;
+};
+
+/**
+ * Deep clone danh sách episode và gán _vid cho từng item.
+ * Gọi khi bắt đầu phiên chỉnh sửa để tạo bản nháp tách biệt khỏi dữ liệu gốc.
+ */
+export function initEpisodeSession(
+  episodes: (EpisodeCreateDTO | EpisodeResponseDTO)[]
+): EpisodeWithVid[] {
+  return episodes.map(ep => ({
+    ...structuredClone(ep),                        // deep clone — không mutate gốc
+    _vid: ep.slug?.trim() || crypto.randomUUID(),  // slug nếu có, uuid cho episode chưa có slug
+  }));
+}
+
+/**
+ * Xóa _vid trước khi đóng gói payload gửi lên server.
+ * Backend nhận EpisodeCreateDTO[] sạch để thực hiện purge + bulk insert.
+ */
+export function stripVid(episodes: EpisodeWithVid[]): EpisodeCreateDTO[] {
+  return episodes.map(({ _vid, ...ep }) => ep as EpisodeCreateDTO);
+}
+
+// ==========================================
 // 4. MOVIE TYPES
 // ==========================================
 export interface MovieBaseDTO {
@@ -77,15 +113,15 @@ export interface MovieBaseDTO {
   origin_name?: string;
   is_series: boolean;
 
-  status?: string;   
+  status?: string;
   description?: string;
   poster_url?: string;
   thumb_url?: string;
   trailer_url?: string;
 
-  quality?: string;       
-  lang?: string;            
-  time?: string;           
+  quality?: string;
+  lang?: string;
+  time?: string;
   year?: number;
   view?: number;
 
@@ -97,7 +133,6 @@ export interface MovieBaseDTO {
   chieurap?: boolean;
   notify?: string;
   showtimes?: string;
-  
 }
 
 export interface MovieCreateDTO extends MovieBaseDTO {

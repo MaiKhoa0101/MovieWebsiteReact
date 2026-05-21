@@ -68,7 +68,6 @@ interface SlideContentProps {
     quality?: string;
     isSeries: boolean;
     onWatch: () => void;
-    onInfo: () => void;
 }
 
 export function SlideContent({

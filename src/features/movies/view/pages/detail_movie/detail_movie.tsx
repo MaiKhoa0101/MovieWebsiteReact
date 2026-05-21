@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMovieViewModel } from "../../../../../viewmodel/MovieViewModel";
-import type { EpisodeResponseDTO, MovieDetailResponseDTO } from "../../../models/movie.dto";
+import type { EpisodeResponseDTO } from "../../../models/movie.dto";
 import { MediaPlayer } from "./movie_player";
 import "./detail_page.css";
 import { MdPlayArrow } from "react-icons/md";
 import { Topbar } from "../../../../../shared/components/topbar/topbar";
-import { useAuthViewModel } from "../../../../../viewmodel/AuthViewModel";
 
 
 
@@ -15,13 +14,11 @@ export default function DetailMovie() {
     const { slug } = useParams();
     const navigate = useNavigate();
     const movievm = useMovieViewModel();
-    const authvm = useAuthViewModel();
     const movie = movievm.movie_detail;
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [activeServer, setActiveServer] = useState<string | null>(null);
     const [currentEpisode, setCurrentEpisode] = useState<EpisodeResponseDTO | null>(null);
-    const [expanded, setExpanded] = useState(false);
     const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
     const error = movievm.error
 
@@ -44,7 +41,6 @@ export default function DetailMovie() {
         serverGroups[key].push(ep);
     });
 
-    // Sắp xếp từng server theo số trong name_episode
     const extractEpNumber = (name: string): number => {
         const match = name.match(/\d+/);
         return match ? parseInt(match[0]) : 0;
@@ -56,7 +52,7 @@ export default function DetailMovie() {
         );
     });
     const serverNames = Object.keys(serverGroups);
-    const videoUrl = currentEpisode?.link_embed || currentEpisode?.link_m3u8 || "";
+    const videoUrl = currentEpisode?.link_m3u8 || currentEpisode?.link_embed || "";
 
     if (error) {
         return (
@@ -72,7 +68,7 @@ export default function DetailMovie() {
                         <strong>Cảnh báo:</strong> {error}
                     </div>
                 )}
-                <button className = "detail-btn-watch" onClick={() =>navigate("/login")}>Đăng nhập lại</button>
+                <button className="detail-btn-watch" onClick={() => navigate("/login")}>Đăng nhập lại</button>
             </div>
         );
     }
@@ -155,11 +151,11 @@ export default function DetailMovie() {
 
                             <h2 style={{
                                 textTransform: "uppercase",
-                                color: `${movie.status == "completed" ? "lightgreen" : !movie.status? "red": "yellow"}`,
+                                color: `${movie.status == "completed" ? "lightgreen" : !movie.status ? "red" : "yellow"}`,
                                 fontSize: "12px"
                             }}
                                 className="detail-info-column__subtitle">
-                                {movie.status == "completed" ? "Đầy đủ" : movie.status == "incomplete"? `Đang cập nhật ${movie.episode_current}/${movie.episode_total} tập`: "Chưa cập nhật"}
+                                {movie.status == "completed" ? "Đầy đủ" : movie.status == "incomplete" ? `Đang cập nhật ${movie.episode_current}/${movie.episode_total} tập` : "Chưa cập nhật"}
                             </h2>
                         </div>
                     </div>
@@ -169,28 +165,24 @@ export default function DetailMovie() {
                             <MediaPlayer videoUrl={videoUrl} />
                         </div>
                     )}
+                    {!isPlaying && (
 
-                    <div className="detail-cta-group">
-                        {localStorage.getItem('auth_token') ? (
-                            <button className="detail-btn-watch" onClick={() => setIsPlaying(true)}>
-                                Xem phim
-                            </button>
-                        ) : (
-                            <button className="detail-btn-watch detail-btn-watch--guest" onClick={() => navigate('/login')}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                                    <polyline points="10 17 15 12 10 7" />
-                                    <line x1="15" y1="12" x2="3" y2="12" />
-                                </svg>
-                                Đăng nhập để xem
-                            </button>
-                        )}
-                        <div className="detail-btn-row-secondary">
-                            <button className="detail-btn-save">Lưu vào bộ sưu tập</button>
+                        <div className="detail-cta-group">
+                            {localStorage.getItem('auth_token') ? (
+                                <button className="detail-btn-watch" onClick={() => setIsPlaying(true)}>
+                                    Xem phim
+                                </button>
+                            ) : (
+                                <button className="detail-btn-watch detail-btn-watch--guest" onClick={() => navigate('/login')}>
+                                    Đăng nhập để xem
+                                </button>
+                            )}
+                            <div className="detail-btn-row-secondary">
+                                <button className="detail-btn-save">Lưu vào bộ sưu tập</button>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* STATS BAR */}
                     <div className="detail-stats-bar">
                         {[
                             { value: movie.year ?? "—", label: "Năm" },

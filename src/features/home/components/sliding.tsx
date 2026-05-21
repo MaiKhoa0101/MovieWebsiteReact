@@ -24,7 +24,6 @@ export function SlideNewMovie({ movie_list }: SlideNewMovieProps) {
     return (
         <div className="hero-carousel">
 
-            {/* N backgrounds — mỗi slide 1 ảnh, fade in/out qua CSS */}
             {movie_list.map((m, i) => (
                 <HeroSlide
                     key={m.id}
@@ -44,7 +43,6 @@ export function SlideNewMovie({ movie_list }: SlideNewMovieProps) {
                 quality={movie.quality}
                 isSeries={movie.is_series}
                 onWatch={() => navigate(`/detail/${movie.slug_name}`)}
-                onInfo={()  => navigate(`/detail/${movie.slug_name}`)}
             />
  
             {movie_list.length > 1 && (

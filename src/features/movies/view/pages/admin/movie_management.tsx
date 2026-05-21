@@ -90,7 +90,9 @@ export function MovieManagement() {
                 <UpdateMovieInfo
                     movie={vm.editingMovie}
                     onClose={() => vm.setEditingMovie(null)}
-                    onSubmit={vm.updateMovie}
+                    onSubmit={
+                        vm.updateMovie
+                    }
                     onUploadVideo={vm.uploadEpisodeVideo}  
                 />  
             )}

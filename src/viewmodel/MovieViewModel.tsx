@@ -7,8 +7,8 @@ import type {
     MovieResponseDTO
 } from "../features/movies/models/movie.dto";
 
-const BASE_URL = "http://localhost:8000/api/v1/movies";
-const BASE_MEDIA_URL = "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_MEDIA_URL = import.meta.env.VITE_BASE_MEDIA_URL;
 
 function getHeaders() {
     const token = localStorage.getItem("auth_token");
@@ -21,15 +21,12 @@ function getHeaders() {
 export function useMovieViewModel() {
     const [movielist, setMovieList] = useState<MovieResponseDTO[]>([]);
     const [movie_detail, setMovieDetail] = useState<MovieDetailResponseDTO | null>(null);
-    const [error, setError] = useState<string | null>(null);;
+    const [error, setError] = useState<string | null>(null);
 
     const fetchMovies = useCallback(async () => {
         try {
             const res = await axios.get(BASE_URL, { headers: getHeaders() });
             setMovieList(res.data.data ?? []);
-            for (let i = 0; i < res.data.data.length; i++) {
-                console.log("Tim dc thumb: ", res.data.data[i].thumb_url)
-            }
         } catch (error) {
             console.error("Lỗi lấy danh sách phim:", error);
         }
@@ -37,39 +34,29 @@ export function useMovieViewModel() {
 
     const fetchMoviesBySlug = useCallback(async (slug: string, token?: string | null) => {
         try {
-            if (!token) {
-                return
-            }
+            if (!token) return;
             setError(null);
             const res = await axios.get(
                 `${BASE_URL}/name/${slug}`,
-                {
-                    headers: {
-                        ...getHeaders(),
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
+                { headers: { ...getHeaders(), Authorization: `Bearer ${token}` } }
             );
             setMovieDetail(res.data.data ?? null);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 if (error.response) {
-                    const backendMessage = error.response.data?.detail || error.response.data?.message || "Lỗi từ máy chủ!";
-                    console.log(error)
-
-                    // Bạn có thể custom thêm dựa vào status code nếu muốn
-                    if (error.response.status === 401) {
+                    const backendMessage =
+                        error.response.data?.detail ||
+                        error.response.data?.message ||
+                        "Lỗi từ máy chủ!";
+                    if (error.response.status === 401)
                         setError("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
-                    } else if (error.response.status === 404) {
+                    else if (error.response.status === 404)
                         setError("Không tìm thấy bộ phim này.");
-                    } else {
+                    else
                         setError(backendMessage);
-                    }
                 } else if (error.request) {
-                    // 2. Request đã gửi đi nhưng máy chủ không trả lời (Rớt mạng, sập Server)
                     setError("Không thể kết nối đến máy chủ. Kiểm tra lại đường truyền mạng.");
                 } else {
-                    // 3. Lỗi do code Frontend thiết lập sai
                     setError("Lỗi hệ thống khi gửi yêu cầu.");
                 }
             } else {
@@ -90,7 +77,7 @@ export function useMovieAdminViewModel() {
     const [editingMovie, setEditingMovie] = useState<MovieDetailResponseDTO | null>(null);
     const [deletingMovie, setDeletingMovie] = useState<MovieResponseDTO | null>(null);
 
-    // ---------- FETCH LIST ----------
+    // ── FETCH LIST ──
     const fetchMovies = async () => {
         try {
             const res = await axios.get(BASE_URL, { headers: getHeaders() });
@@ -100,11 +87,9 @@ export function useMovieAdminViewModel() {
         }
     };
 
-    useEffect(() => {
-        fetchMovies();
-    }, []);
+    useEffect(() => { fetchMovies(); }, []);
 
-    // ---------- FETCH DETAIL ----------
+    // ── FETCH DETAIL ──
     const fetchMovieById = async (id: string): Promise<MovieDetailResponseDTO | null> => {
         try {
             const res = await axios.get(`${BASE_URL}/id/${id}`, { headers: getHeaders() });
@@ -120,7 +105,7 @@ export function useMovieAdminViewModel() {
         setEditingMovie(detail);
     };
 
-    // ---------- CREATE ----------
+    // ── CREATE ──
     const createMovie = async (newMovieData: MovieCreateDTO) => {
         try {
             await axios.post(`${BASE_URL}/create`, newMovieData, { headers: getHeaders() });
@@ -133,11 +118,14 @@ export function useMovieAdminViewModel() {
         }
     };
 
-    // ---------- PATCH ----------
+    // ── PATCH ──
+    // Nhận MoviePatchDTO — có thể chứa episodes (purge + re-insert) hoặc không (chỉ info)
     const updateMovie = async (id: string, patchData: MoviePatchDTO) => {
         try {
             await axios.patch(`${BASE_URL}/patch-movie/${id}`, patchData, { headers: getHeaders() });
-            setEditingMovie(null);
+            // Reload detail để tempEpisodes ở UpdateMovieInfo nhận dữ liệu mới khi mở lại
+            const updated = await fetchMovieById(id);
+            if (updated) setEditingMovie(updated);
             fetchMovies();
             alert("Cập nhật thành công!");
         } catch (error) {
@@ -146,7 +134,7 @@ export function useMovieAdminViewModel() {
         }
     };
 
-    // ---------- DELETE ----------
+    // ── DELETE ──
     const deleteMovie = async (id: string) => {
         try {
             await axios.delete(`${BASE_URL}/delete-by-id/${id}`, { headers: getHeaders() });
@@ -158,29 +146,26 @@ export function useMovieAdminViewModel() {
             alert("Xóa phim thất bại!");
         }
     };
-    // uploadEpisodeVideo nhận thêm episodeSlug
+
+    // ── UPLOAD VIDEO HLS ──
+    // Chỉ cần movieSlug + episodeSlug — không cần episodeId
+    // Backend tra cứu episode bằng slug, lưu vào media/movie/{movieSlug}/{episodeSlug}/hls/
     const uploadEpisodeVideo = async (
-        episodeId: string,
-        episodeSlug: string,        // ← thêm
+        movieSlug: string,
+        episodeSlug: string,
         file: File
     ): Promise<string | null> => {
-        if (!editingMovie) {
-            alert("Không tìm thấy thông tin phim.");
-            return null;
-        }
-
-        const movieSlug = editingMovie.slug_name;
-
         try {
             const formData = new FormData();
             formData.append("file", file);
 
             const res = await axios.post(
-                `${BASE_URL}/upload-video-hls/${movieSlug}/${episodeSlug}/${episodeId}`,
+                `${BASE_URL}/upload-video-hls/${movieSlug}/${episodeSlug}`,
                 formData,
                 { headers: { ...getHeaders(), "Content-Type": "multipart/form-data" } }
             );
 
+            // BE trả relative path: "movie/the-avengers/tap-1/hls/index.m3u8"
             const localPath: string = res.data.data;
             return `${BASE_MEDIA_URL}/${localPath.replace(/\\/g, "/")}`;
 

@@ -5,6 +5,7 @@
 import { useState } from "react";
 import type { EpisodeCreateDTO, MovieCreateDTO } from "../../../models/movie.dto";
 import { EpisodeFormBlock } from "../../components/episode_form";
+import { EpisodeSection } from "../../../../../shared/components/form_episode_section";
 
 // ==========================================
 export const defaultEpisode: EpisodeCreateDTO = {
@@ -59,23 +60,28 @@ export function CreateMovieForm({
         onSubmit(formData);
     };
 
-    const handleEpisodeChange = (index: number, field: keyof EpisodeCreateDTO, value: string) => {
-        const newEpisodes = [...formData.episodes];
-        newEpisodes[index] = { ...newEpisodes[index], [field]: value };
-        setFormData({ ...formData, episodes: newEpisodes });
+    const handleEpisodeChange = (slug: string, field: keyof EpisodeCreateDTO, value: string) => {
+        setFormData(prev => {
+            const episodes = [...prev.episodes];
+            const idx = episodes.findIndex(ep => ep.slug === slug);
+            if (idx === -1) return prev;
+            episodes[idx] = { ...episodes[idx], [field]: value };
+            return { ...prev, episodes };
+        });
     };
-
-    const handleAddEpisode = () => {
-        setFormData({ ...formData, episodes: [...formData.episodes, { ...defaultEpisode }] });
-    };
-
-    const handleRemoveEpisode = (index: number) => {
+    const handleAddEpisode = (serverName: string) => {
         setFormData({
             ...formData,
-            episodes: formData.episodes.filter((_, i) => i !== index),
+            episodes: [...formData.episodes, { ...defaultEpisode, server_name: serverName }],
         });
     };
 
+    const handleRemoveEpisode = (slug: string) => {
+        setFormData(prev => ({
+            ...prev,
+            episodes: prev.episodes.filter(ep => ep.slug !== slug),
+        }));
+    };
     return (
         <div className="modal-overlay">
             <div className="modal-content">
@@ -168,7 +174,6 @@ export function CreateMovieForm({
                         </div>
                     </div>
 
-                    {/* -- FLAGS -- */}
                     <div style={{ display: "flex", gap: "20px", marginTop: "10px", flexWrap: "wrap" }}>
                         <label className="checkbox-label">
                             <input type="checkbox" checked={formData.chieurap ?? false}
@@ -187,26 +192,19 @@ export function CreateMovieForm({
                         </label>
                     </div>
 
-                    {/* -- DANH SÁCH TẬP -- */}
                     <div className="divider" />
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <h4 className="section-title" style={{ margin: 0 }}>Danh sách tập phim</h4>
-                        <button type="button" onClick={handleAddEpisode}
-                            style={{ padding: "4px 10px", backgroundColor: "#10b981", color: "white",
-                                border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>
-                            + Thêm Tập
-                        </button>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <h4 className="section-title" style={{ margin: 0 }}>
+                            Danh sách tập phim ({formData.episodes.length})
+                        </h4>
                     </div>
 
-                    {formData.episodes.map((ep, index) => (
-                        <EpisodeFormBlock
-                            key={index}
-                            index={index}
-                            episode={ep}
-                            onChange={handleEpisodeChange}
-                            onRemove={handleRemoveEpisode}
-                        />
-                    ))}
+                    <EpisodeSection
+                        episodes={formData.episodes}
+                        onChange={handleEpisodeChange}
+                        onAdd={handleAddEpisode}
+                        onRemove={handleRemoveEpisode}
+                    />
 
                     <div className="modal-actions">
                         <button type="submit" className="btn-primary">Lưu Phim</button>
